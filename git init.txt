@@ -1,0 +1,12 @@
+git init .
+git add --all
+git commit -m "first commit of my code"
+git remote add origin https://Telesure@dev.azure.com/Telesure/One%20Platform/_git/Has_Functions-Person
+git push origin master --force
+
+
+after 
+git add --all
+git commit -m "comment"
+c
+Please see piplelines push to master and delete branches when done

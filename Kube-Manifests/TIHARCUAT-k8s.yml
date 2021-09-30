@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fnperson
+  labels:
+    app: fnperson
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fnperson
+  template:
+    metadata:
+      labels:
+        app: fnperson
+    spec:
+      containers:        
+      - name: fnperson
+        image: tihacruat.azurecr.io/has/fnperson:latest
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/swagger/ui
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          successThreshold: 1
+          timeoutSeconds: 2
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /api/swagger/ui
+            port: 80
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 2
+          successThreshold: 2
+          timeoutSeconds: 2
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false      
+        resources: 
+          requests:
+            memory: 256Mi
+            cpu: 250m
+            ephemeral-storage: 500Mi
+          limits:
+            memory: 4Gi
+            ephemeral-storage: 5Gi
+        ports:
+        - containerPort: 80
+          name: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fnperson
+  labels:
+    app: fnperson-service
+spec:
+  selector:
+    app: fnperson
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fnperson-node
+  labels:
+    app: fnperson-service
+spec:
+  selector:
+    app: fnperson
+  ports:
+  - name: http-node
+    port: 80
+    nodePort: 31542
+    protocol: TCP
+  type: NodePort
+
+
+

@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+    <DockerFastModeProjectMountDirectory>/home/site/wwwroot</DockerFastModeProjectMountDirectory>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileContext>.</DockerfileContext>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Remove="Models\**" />
+    <Compile Remove="ReferenceBuildobj\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <EmbeddedResource Remove="ReferenceBuildobj\**" />
+    <None Remove="Models\**" />
+    <None Remove="ReferenceBuildobj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Agreement-DAL" Version="1.0.0" />
+    <PackageReference Include="Azure.Core" Version="1.4.1" />
+    <PackageReference Include="Azure.Identity" Version="1.2.2" />
+    <PackageReference Include="Azure.Security.KeyVault.Secrets" Version="4.1.0" />
+    <PackageReference Include="AzureExtensions.Swashbuckle" Version="3.2.2" />
+    <PackageReference Include="ContactAndPlaceDAL" Version="1.1.8" />
+    <PackageReference Include="HelpperFunctions.CommonLib" Version="1.0.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.14.0" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Core" Version="5.2.7" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Core" Version="3.0.23" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.RabbitMQ" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.ServiceBus" Version="4.1.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.7" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.9" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.2.3" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.9" />
+    <PackageReference Include="Moq" Version="4.16.1" />
+    <PackageReference Include="Party-Dll" Version="1.0.25" />
+    <PackageReference Include="Registration-DAL" Version="1.0.5" />
+    <PackageReference Include="RoleAndRelationship-Dal" Version="1.0.1" />
+    <PackageReference Include="ServiceExtensions" Version="1.0.0" />
+    <PackageReference Include="TIHSA.CacheHandler" Version="0.3.21" />
+    <PackageReference Include="WindowsAzure.Storage" Version="9.3.3" />
+    <PackageReference Include="Z.Expressions.Eval" Version="4.0.24" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="local.settings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>Never</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,90 @@
+﻿[
+	{
+		"PersonDetail": {
+			"PersonDetaiId": 1,
+			"PartyId": 1,
+			"PersonId": 1,
+			"PersonDetailCodeId": 1,
+			"NationalityId": 1
+		},
+		"PersonName": {
+			"PersonaNameId": 1,
+			"PersonId": 1,
+			"PrefixTitleCodeId": 1,
+			"GivenName": "Kraai",
+			"MiddleName": "Tester",
+			"Surname": "DuToit",
+			"Suffix": "jf",
+			"PersonNameUsageCodeId": 1
+		},
+		"PersonRegistration": [
+			{
+				"CivilRegistration": [
+					{
+						"identityCard": [
+							{
+								"ValidityCode": {
+									"Passport": [
+										{
+											"PassportId": 1,
+											"ValidityCodeId": 1
+										}
+									]
+								},
+								"IdentityCard": 4,
+								"PersonRegistrationId": 1,
+								"ValidityCodeId": 1,
+								"IdentityNumber": "5907177453082"
+							}
+						],
+						"CivilRefistrationId": 1,
+						"PersonRegistrationId": 1,
+						"RegistrationDate": "2019-05-19T00:00:00"
+					}
+				],
+				"EducationCertificate": [
+					{
+						"EducationCertificateId": 3,
+						"PersonRegistrationId": 1,
+						"SubjectAreaCodeId": 1,
+						"EducationCertificateCodeId": 1,
+						"EducationGradeCodeId": 1,
+						"Name": "HighSchool",
+						"EducationCertificateTitleCodeId": 1
+					}
+				],
+				"PersonalActivityLicence": [
+					{
+						"PersonalActivityLicenceId": 1,
+						"CompetitionLicenseIndicator": true,
+						"Name": "DriversLicence",
+						"RenewalIntentionIndicator": false,
+						"PersonRegistrationId": 1
+					},
+					{
+						"PersonalActivityLicenceId": 5,
+						"CompetitionLicenseIndicator": false,
+						"Name": "gun",
+						"RenewalIntentionIndicator": true,
+						"PersonRegistrationId": 1
+					}
+				],
+				"ResidentRegistration": [
+					{
+						"ResidentRegistrationId": 1,
+						"PersonRegistrationId": 1
+					}
+				],
+				"PersonRegistrationId": 1,
+				"PersonId": 1,
+				"PersonRegistrationTypeCodeId": 1
+			}
+		],
+		"DeathIndicator": false,
+		"BloodTypeCodeId": 2,
+		"GenderCodeId": 1,
+		"EthnicityId": 1,
+		"MissingIndicator": false,
+		"MaritalStatusId": 1
+	}
+]

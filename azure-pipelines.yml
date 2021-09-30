@@ -1,0 +1,289 @@
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+    - release/*
+    - dev
+
+pr:
+  - master
+  - release/*
+  - dev 
+
+variables:
+  # Dev variables
+  RegistryNameDev: 'TIHACRDEV'
+  RegistryAddressDev: 'tihacrdev.azurecr.io'
+  K8sServiceConnectionDev: 'Kuburnetes_OnPrem_Dev_KubeConfig'
+  RegistrySecretDev: 'tihacrdev'
+
+  # SIT variables
+  RegistryNameSIT: 'TIHACRSIT'
+  RegistryAddressSIT: 'tihacrsit.azurecr.io'
+  K8sServiceConnectionSIT: 'Kuburnetes_OnPrem_SIT_KubeConfig'
+  RegistrySecretSIT: 'tihacrsit'
+
+  # UAT variables
+  RegistryNameUAT: 'TIHACRUAT'
+  RegistryAddressUAT: 'tihacruat.azurecr.io'
+  K8sServiceConnectionUAT: 'Kuburnetes_OnPrem_UAT_KubeConfig'
+  RegistrySecretUAT: 'tihacruat'
+
+  # Prod varaibles
+  RegistryNameProd: 'TIHACRPROD'
+  RegistryAddressProd: 'tihacrprod.azurecr.io'
+  K8sServiceConnectionProd: 'Kuburnetes_OnPrem_Prod_KubeConfig'
+  RegistrySecretProd: 'tihacrprod'
+
+  tag: '$(Build.BuildId)'
+  ContainerAgentDockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+  vmImageName: 'ubuntu-latest'
+  imageRepository: has/fnperson
+  namespace: has
+
+pool: 'Container Agents'
+
+stages:
+- stage: Dev
+  displayName: 'Development: Build and deploy image to Dev environment.'
+  jobs:
+  - job: Build_Dev
+    pool:
+      vmImage: $(vmImageName)
+    displayName: Building image and pushing to dev registry
+    workspace:
+      clean: all
+    steps:
+    - task: Docker@2
+      displayName: Build and push an image to container registry Dev
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(ContainerAgentDockerfile)
+        containerRegistry: $(RegistryNameDev)
+        tags: |
+          latest
+          $(tag)
+
+  - deployment: Deploy_Dev
+    dependsOn: Build_Dev
+    displayName: Deploy image to Dev clusters
+    environment: K8s-Development
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          
+          - task: KubernetesManifest@0
+            displayName: Creating container registry secret on Dev cluster
+            inputs:
+              action: 'createSecret'
+              kubernetesServiceConnection: '$(K8sServiceConnectionDev)'
+              namespace: '$(namespace)'
+              secretType: 'dockerRegistry'
+              secretName: '$(RegistrySecretDev)'
+              dockerRegistryEndpoint: '$(RegistryNameDev)'
+
+          - task: KubernetesManifest@0
+            displayName: Deploying built image to Dev cluster using manifest file.
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: '$(K8sServiceConnectionDev)'
+              namespace: '$(namespace)'
+              manifests: '$(Build.SourcesDirectory)/Kube-Manifests/TIHARCDEV-k8s.yml'
+              imagePullSecrets: '$(RegistrySecretDev)'
+              rolloutStatusTimeout: '300'
+  - job:
+    pool: 'Test Automation'
+    steps: 
+          - task: SoapUIProForAzureDevOpsTask@2
+            inputs:
+              project: 'Tests/HasTestsuite.xml'
+              rootFolder: '$(Common.TestResultsDirectory)'
+              testSuite: 'TestSuite 1'
+              testCase: 'Person TestCase'
+              environment: 'Dev'
+          - task: PublishTestResults@2
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/*.xml'
+              mergeTestResults: true
+              failTaskOnFailedTests: true
+              testRunTitle: 'RolerelationshipTest'
+
+
+- stage: SIT
+  displayName: 'SIT: Build and deploy image to SIT environment.'
+  dependsOn: Dev
+  condition: or(eq(variables['build.sourceBranch'],'refs/heads/master'), startsWith(variables['build.sourceBranch'],'refs/heads/release/'))
+  jobs:
+  - job: Build_SIT
+    pool:
+      vmImage: $(vmImageName)
+    displayName: Building image and pushing to SIT registry
+    workspace:
+      clean: all
+    steps:
+    - checkout: self
+    - task: Docker@2
+      displayName: Build and push an image to container registry SIT
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(ContainerAgentDockerfile)
+        containerRegistry: $(RegistryNameSIT)
+        tags: |
+          latest
+          $(tag)
+
+  - deployment: Deploy_SIT
+    dependsOn: Build_SIT
+    displayName: Deploy image to SIT clusters
+    environment: K8s-SIT
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          
+          - task: KubernetesManifest@0
+            displayName: Creating container registry secret on SIT cluster
+            inputs:
+              action: 'createSecret'
+              kubernetesServiceConnection: '$(K8sServiceConnectionSIT)'
+              namespace: '$(namespace)'
+              secretType: 'dockerRegistry'
+              secretName: '$(RegistrySecretSIT)'
+              dockerRegistryEndpoint: '$(RegistryNameSIT)'
+              
+          - task: KubernetesManifest@0
+            displayName: Deploying built image to SIT cluster using manifest file.
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: '$(K8sServiceConnectionSIT)'
+              namespace: '$(namespace)'
+              manifests: '$(Build.SourcesDirectory)/Kube-Manifests/TIHARCSIT-k8s.yml'
+              imagePullSecrets: '$(RegistrySecretSIT)'
+              rolloutStatusTimeout: '300'
+
+- stage: UAT
+  displayName: 'UAT: Build and deploy image to UAT environment.'
+  dependsOn: SIT
+  condition: or(eq(variables['build.sourceBranch'],'refs/heads/master'), startsWith(variables['build.sourceBranch'],'refs/heads/release/'))
+  jobs:
+  - job: Build_UAT
+    pool:
+      vmImage: $(vmImageName)
+    displayName: Building image and pushing to UAT registry
+    workspace:
+      clean: all
+    steps:
+    - checkout: self
+    - task: Docker@2
+      displayName: Build and push an image to container registry UAT
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(ContainerAgentDockerfile)
+        containerRegistry: $(RegistryNameUAT)
+        tags: |
+          latest
+          $(tag)
+
+  - deployment: Deploy_UAT
+    dependsOn: Build_UAT
+    displayName: Deploy image to UAT clusters
+    environment: K8s-UAT
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          
+          - task: KubernetesManifest@0
+            displayName: Creating container registry secret on UAT cluster
+            inputs:
+              action: 'createSecret'
+              kubernetesServiceConnection: '$(K8sServiceConnectionUAT)'
+              namespace: '$(namespace)'
+              secretType: 'dockerRegistry'
+              secretName: '$(RegistrySecretUAT)'
+              dockerRegistryEndpoint: '$(RegistryNameUAT)'
+              
+          - task: KubernetesManifest@0
+            displayName: Deploying built image to UAT cluster using manifest file.
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: '$(K8sServiceConnectionUAT)'
+              namespace: '$(namespace)'
+              manifests: '$(Build.SourcesDirectory)/Kube-Manifests/TIHARCUAT-k8s.yml'
+              imagePullSecrets: '$(RegistrySecretUAT)'
+              rolloutStatusTimeout: '300'
+
+- stage: Prod
+  displayName: 'Production: Build and deploy image to Prod environment.'
+  dependsOn: UAT
+  condition: or(eq(variables['build.sourceBranch'],'refs/heads/master'), startsWith(variables['build.sourceBranch'],'refs/heads/release/'))
+  jobs:
+  - job: Build_Prod
+    pool:
+      vmImage: $(vmImageName)
+    displayName: Building image and pushing to Production registry
+    workspace:
+      clean: all
+    steps:
+    - checkout: self
+    - task: Docker@2
+      displayName: Build and push an image to container registry Production
+      inputs:
+        command: buildAndPush
+        repository: $(imageRepository)
+        dockerfile: $(ContainerAgentDockerfile)
+        containerRegistry: $(RegistryNameProd)
+        tags: |
+          latest
+          $(tag)
+
+  - deployment: Deploy_Prod
+    dependsOn: Build_Prod
+    displayName: Deploy image to Prod clusters
+    environment: K8s-Production
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: self
+          
+          - task: KubernetesManifest@0
+            displayName: Creating container registry secret on Prod cluster
+            inputs:
+              action: 'createSecret'
+              kubernetesServiceConnection: '$(K8sServiceConnectionProd)'
+              namespace: '$(namespace)'
+              secretType: 'dockerRegistry'
+              secretName: '$(RegistrySecretProd)'
+              dockerRegistryEndpoint: '$(RegistryNameProd)'
+              
+          - task: KubernetesManifest@0
+            displayName: Deploying built image to Prod cluster using manifest file.
+            inputs:
+              action: 'deploy'
+              kubernetesServiceConnection: '$(K8sServiceConnectionProd)'
+              namespace: '$(namespace)'
+              manifests: '$(Build.SourcesDirectory)/Kube-Manifests/TIHARCPROD-k8s.yml'
+              imagePullSecrets: '$(RegistrySecretProd)'
+              rolloutStatusTimeout: '300'
+
+          - task: Kubernetes@1
+            inputs:
+              connectionType: 'Kubernetes Service Connection'
+              kubernetesServiceEndpoint: '$(K8sServiceConnectionProd)'
+              namespace: '$(namespace)'
+              command: 'set'
+              arguments: 'image deployments/fnperson fnperson=$(RegistryAddressProd)/$(imageRepository):$(tag)'
+              secretType: 'dockerRegistry'
+              containerRegistryType: 'Container Registry'
+              dockerRegistryEndpoint: '$(RegistryNameProd)'
+              secretName: '$(RegistrySecretProd)'

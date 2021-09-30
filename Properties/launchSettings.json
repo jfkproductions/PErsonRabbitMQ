@@ -1,0 +1,14 @@
+{
+  "profiles": {
+    "FnPerson": {
+      "commandName": "Project",
+      "commandLineArgs": "host start --port 7074 --pause-on-error"
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
+      "httpPort": 33360,
+      "useSSL": false
+    }
+  }
+}

@@ -1,0 +1,19 @@
+
+copy dll to ReferenceBuildobj
+add ref to project
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="3.1.5" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.7" />
+    <PackageReference Include="Microsoft.OpenApi" Version="1.1.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="5.4.1" />
+
+docker build --no-cache -t fnperson -f fnperson .
+
+test local 
+
+docker run --env SqlConnectionString="Server=tcp:ttsaztopsqlpr01.database.windows.net,1433;Initial Catalog=Party;Persist Security Info=False;User ID=gitsqladmin;Password=J0uM@s3P@55w0rd;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=60;"  -p 8085:80 -it azfnperson:latest
+push to acr
+docker tag fnperson azcrtestdelme.azurecr.io/fnperson
+docker push azcrtestdelme.azurecr.io/fnperson
+

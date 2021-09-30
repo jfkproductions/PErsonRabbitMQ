@@ -1,0 +1,31 @@
+
+
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "KeyvaultUri": "https://oneplatformdbkeyvault.vault.azure.net/",
+    "APPINSIGHTS_INSTRUMENTATIONKEY": "6bb9e699-5003-4df2-9aed-51e2e73171a9",
+    "AgreementMsURL": "http://10.200.113.143:32391/api/Agreement",
+    "ContactAndPlaceMSURL": "http://10.200.113.143:31579/api/PersonContactAndPlace",
+    "KeyvaultSecretRoleRel": "RolesRelationShipDBConnectionSIT",
+    "KeyvaultSecretPar": "PartyDbConnectionSIT",
+    "KeyvaultSecretConPla": "ContactPlaceDbConnectionSIT",
+    "KeyvaultSecretReg": "KeyvaultSecretRegSIT",
+    "KeyvaultSecretAgr": "AgreementDBConnectionSIT",
+    "AZURE_CLIENT_ID": "e34dba78-2226-4ce8-89f5-19afb8d1758f",
+    "AZURE_TENANT_ID": "8db3ceb8-7446-48bc-8bb4-97803c527a37",
+    "AZURE_CLIENT_PWD": "iPXaB2glmwYYvqQsB9eSQF~6i-l0jDnmaP",
+    "PartyRoleinAgreementTypeCodeId": "1",
+    "Version": "1",
+    "StatusCodeListId": "1",
+    "StatusReasonCodeListId": "1",
+    "TextQualificationCodeListId": "1",
+    "AgreementKindCodeListId": "1",
+    "PartyRoleInProductTypeCodeId": "1",
+    "PMPartyRoleinAgreementTypeCode": "PRINCIPLE",
+    "CPPartyRoleinAgreementTypeCode": "PMPROXY",
+    "rabbitMQConnectionAppSetting": "amqp://guest:guest@10.200.113.143:32610"
+  }
+}

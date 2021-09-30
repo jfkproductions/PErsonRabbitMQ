@@ -1,0 +1,12 @@
+ dotnet add package Microsoft.EntityFrameworkCore.Design
+
+ dotnet add package Microsoft.EntityFrameworkCore.SqlServer
+ dotnet add package Microsoft.VisualStudio.Web.CodeGeneration.Design
+ dotnet ef dbcontext scaffold "Server=ttsaztopsqlpr01.database.windows.net;Database=Party;User ID=gitsqladmin;Password=J0uM@s3P@55w0rd" Microsoft.EntityFrameworkCore.SqlServer -o Models
+ 
+
+   "appId": "e34dba78-2226-4ce8-89f5-19afb8d1758f",
+  "displayName": "localhost:7072",
+  "name": "http://localhost:7072",
+  "password": "iPXaB2glmwYYvqQsB9eSQF~6i-l0jDnmaP",
+  "tenant": "8db3ceb8-7446-48bc-8bb4-97803c527a37"
